@@ -58,7 +58,8 @@ export function baseUrl() {
 }
 
 function authHeaders(): Record<string, string> {
-  const key = process.env.OTARI_API_KEY;
+  // A service key (dashboard: API keys → Service key) is required for per-user budgets (`user` field).
+  const key = process.env.OTARI_SERVICE_KEY || process.env.OTARI_API_KEY;
   if (!key) throw new Error("OTARI_API_KEY is not set");
   return { Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
 }
