@@ -93,7 +93,25 @@ function metaFrom(res: Response, json: any): OtariMeta {
   };
 }
 
-export async function otariChat(p: ChatParams) {
+const TRANSIENT = new Set([429, 500, 502, 503, 504]);
+
+/** Retries transient upstream failures (rate limit / 5xx) with backoff. Never retries budget (403) or client errors. */
+export async function otariChat(p: ChatParams, retries = 2): ReturnType<typeof otariChatOnce> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await otariChatOnce(p);
+    } catch (e) {
+      const transient = (e instanceof OtariError && TRANSIENT.has(e.status)) || (e instanceof TypeError && /fetch failed/i.test(e.message));
+      if (transient && attempt < retries) {
+        await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+async function otariChatOnce(p: ChatParams) {
   const { signal, ...body } = p;
   const res = await fetch(`${baseUrl()}/chat/completions`, {
     method: "POST",

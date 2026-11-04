@@ -13,8 +13,9 @@ export const ROLES = {
   triage: process.env.KESTREL_MODEL_TRIAGE || "mistralai/mistral-small-3.2-24b-instruct-2506",
   researcher: process.env.KESTREL_MODEL_RESEARCHER || "openai/gpt-oss-120b",
   researcherBackup: process.env.KESTREL_MODEL_RESEARCHER_BACKUP || "deepseek/deepseek-v3.2",
-  analyst: process.env.KESTREL_MODEL_ANALYST || "alibaba/qwen-3.5-35b-a3b",
-  writer: process.env.KESTREL_MODEL_WRITER || "deepseek/deepseek-v3.2",
+  researcherBackup2: "alibaba/qwen-3.5-35b-a3b",
+  analyst: process.env.KESTREL_MODEL_ANALYST || "deepseek/deepseek-v3.2", // 12.7s vs 126-191s for qwen-3.5 on the same code-exec task
+  writer: process.env.KESTREL_MODEL_WRITER || "openai/gpt-oss-20b",
 } as const;
 
 export type Role = "triage" | "researcher" | "analyst" | "writer";
@@ -151,7 +152,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     // another open-weight model rather than hand the writer nothing.
     let researcherModel: string = ROLES.researcher;
     let research = await runResearch(researcherModel);
-    for (const alt of [ROLES.researcherBackup, ROLES.analyst]) {
+    for (const alt of [ROLES.researcherBackup, ROLES.researcherBackup2]) {
       if (research.content.trim().length >= 300) break;
       researcherModel = alt;
       research = await runResearch(alt);
