@@ -117,9 +117,15 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     if (hasFetch) researchTools.push({ type: "otari_web_fetch" });
     if (hasSearch) researchTools.push({ type: "otari_web_search", max_uses: 3 });
     const repo = (input.url.match(GITHUB_RE) ?? (input.notes ?? "").match(GITHUB_RE))?.[1];
-    const mcp_servers = repo
-      ? [{ name: "deepwiki", url: "https://mcp.deepwiki.com/mcp", allowed_tools: ["ask_question"], purpose_hint: "Ask questions about a GitHub repository's docs" }]
-      : undefined;
+    // DeepWiki MCP is always offered; the researcher decides whether a sponsor repo is worth querying.
+    const mcp_servers = [
+      {
+        name: "deepwiki",
+        url: "https://mcp.deepwiki.com/mcp",
+        allowed_tools: ["ask_wiki_question"], // NB: the server's tool is ask_wiki_question, not ask_question
+        purpose_hint: "Ask questions about a GitHub repository's documentation",
+      },
+    ];
     const runResearch = () => otariChat({
       model: ROLES.researcher,
       max_tokens: 3000,
@@ -133,7 +139,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
         ),
         usr(
           `Opportunity URL: ${input.url}\nFacts to verify: ${(plan.verify ?? []).join("; ") || "deadline, prize, eligibility, rubric, requirements"}\nSuggested searches: ${(plan.search_queries ?? []).join(" | ") || "none"}\n${
-            repo ? `Sponsor repo: ${repo} (you may query it with the deepwiki tool)\n` : ""
+            `If the sponsor's required technology has a public GitHub repo${repo ? ` (hint: ${repo})` : ""}, query it with the deepwiki ask_wiki_question tool (arguments: repoName "owner/repo", question) to learn what the platform actually offers.\n`
           }${input.notes ? `\nPasted page text (untrusted):\n${input.notes.slice(0, 12000)}` : ""}${
             researchTools.length ? "" : "\n(Web tools are unavailable: use only the pasted text and say UNKNOWN otherwise.)"
           }`,
@@ -146,7 +152,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     const rFeatures = ["multi-model roles"];
     if (hasFetch) rFeatures.push("web fetch");
     if (hasSearch) rFeatures.push("web search");
-    if (mcp_servers) rFeatures.push("MCP");
+    if (research.toolCalls.some((t) => t.type === "mcp")) rFeatures.push("MCP"); // only count it if the gateway really ran it
     yield {
       type: "stage",
       role: "researcher",
