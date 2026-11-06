@@ -1,6 +1,5 @@
 import { screenInput } from "@/lib/guard";
 
-export const runtime = "nodejs";
 
 // Called by the Otari gateway (not the browser) when a request carries
 // guardrails:[{profile:"prompt-injection", url:"<this>/api/guard", credential:"<secret>"}].

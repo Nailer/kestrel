@@ -1,10 +1,14 @@
 import { runScout } from "@/lib/pipeline";
+import { isSeat } from "@/lib/seats";
 
-export const runtime = "nodejs";
 export const maxDuration = 300;
 
 // Streams pipeline events as NDJSON so the UI can show each stage as it completes.
 export async function POST(req: Request) {
+  const code = process.env.KESTREL_ACCESS_CODE;
+  if (code && req.headers.get("x-kestrel-code") !== code) {
+    return Response.json({ error: "Access code required" }, { status: 401 });
+  }
   let body: { url?: string; notes?: string; userId?: string };
   try {
     body = await req.json();
@@ -19,7 +23,8 @@ export async function POST(req: Request) {
     return Response.json({ error: "Provide a valid http(s) URL" }, { status: 400 });
   }
   const notes = (body.notes ?? "").slice(0, 20000);
-  const userId = (body.userId ?? "").trim().slice(0, 64) || undefined;
+  const userId = (body.userId ?? "").trim();
+  if (!isSeat(userId)) return Response.json({ error: "Unknown seat" }, { status: 400 });
 
   const enc = new TextEncoder();
   const stream = new ReadableStream({

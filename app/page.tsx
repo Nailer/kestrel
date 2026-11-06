@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Brief } from "@/lib/pipeline";
+import { SEATS } from "@/lib/seats";
 
 type Stage = {
   role: string;
@@ -30,11 +31,12 @@ const VERDICT_STYLE: Record<string, string> = {
 export default function Home() {
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
-  const [seat, setSeat] = useState("seat-alex");
+  const [seat, setSeat] = useState<string>(SEATS[0]);
   const [stages, setStages] = useState<Stage[]>([]);
   const [brief, setBrief] = useState<Brief | null>(null);
   const [error, setError] = useState<{ message: string; code?: string; scope?: string; retry?: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [code, setCode] = useState("");
 
   async function run(e: React.FormEvent) {
     e.preventDefault();
@@ -45,7 +47,7 @@ export default function Home() {
     try {
       const res = await fetch("/api/scout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-kestrel-code": code },
         body: JSON.stringify({ url, notes, userId: seat }),
       });
       if (!res.ok || !res.body) {
@@ -99,7 +101,13 @@ export default function Home() {
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label className="block text-sm font-medium" htmlFor="seat">Seat</label>
-            <input id="seat" value={seat} onChange={(e) => setSeat(e.target.value)} className="rounded border border-stone-300 px-3 py-2" />
+            <select id="seat" value={seat} onChange={(e) => setSeat(e.target.value)} className="rounded border border-stone-300 px-3 py-2">
+              {SEATS.map((s) => <option key={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium" htmlFor="code">Access code</label>
+            <input id="code" type="password" value={code} onChange={(e) => setCode(e.target.value)} className="rounded border border-stone-300 px-3 py-2" autoComplete="off" />
           </div>
           <button disabled={busy} className="rounded bg-stone-900 px-4 py-2 text-white disabled:opacity-50">{busy ? "Scouting…" : "Scout it"}</button>
         </div>

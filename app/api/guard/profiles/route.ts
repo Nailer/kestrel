@@ -1,4 +1,3 @@
-export const runtime = "nodejs";
 
 // Optional: lets the Otari dashboard list available profiles.
 export async function GET() {
