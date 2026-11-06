@@ -5,10 +5,9 @@ import { screenInput } from "@/lib/guard";
 // guardrails:[{profile:"prompt-injection", url:"<this>/api/guard", credential:"<secret>"}].
 // The gateway appends /validate to the configured url.
 export async function POST(req: Request) {
-  const secret = process.env.KESTREL_GUARDRAIL_CREDENTIAL;
-  if (secret && req.headers.get("authorization") !== `Bearer ${secret}`) {
-    return Response.json({ error: "unauthorized" }, { status: 401 });
-  }
+  // Request-level guardrail entries in Otari carry a `url` but no `credential` field (only org
+  // mandates do), so this endpoint is intentionally unauthenticated: it is a stateless pure function
+  // that returns a verdict for the given text. Input size is capped below.
   let body: { profile?: string; input_text?: string };
   try {
     body = await req.json();

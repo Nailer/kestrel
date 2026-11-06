@@ -71,7 +71,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
   const user = input.userId && process.env.OTARI_SERVICE_KEY ? input.userId : undefined;
   const guardUrl = process.env.KESTREL_GUARDRAIL_URL; // our own /validate service, called by Otari
   const guardrails = guardUrl
-    ? [{ profile: "prompt-injection", mode: "block", url: guardUrl, ...(process.env.KESTREL_GUARDRAIL_CREDENTIAL ? { credential: process.env.KESTREL_GUARDRAIL_CREDENTIAL } : {}) }]
+    ? [{ profile: "prompt-injection", mode: "block", url: guardUrl }]
     : undefined;
 
   try {
