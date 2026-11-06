@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#1c1917"/>
+  <!-- kestrel in a hover: swept wings and a fanned tail -->
+  <path d="M3 13.5C8.5 13 13 11 16 7c3 4 7.5 6 13 6.5-5 .5-9 2.2-13 6-4-3.800-8-5.500-13-6z" fill="#fafaf9"/>
+  <path d="M13 21l3 5 3-5c-1.200.6-4.800.6-6 0z" fill="#f59e0b"/>
+  <circle cx="16" cy="11.200" r="1.300" fill="#1c1917"/>
+</svg>
