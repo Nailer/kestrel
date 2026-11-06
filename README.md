@@ -16,8 +16,8 @@ Four distinct model roles, each a separate Otari call (all open-weight):
 |---|---|---|---|
 | 1 | Triage + input guard | `mistralai/mistral-small-3.2-24b-instruct-2506` | **Guardrails** (custom prompt-injection service), **multi-model roles** |
 | 2 | Research | `openai/gpt-oss-120b`, failover `deepseek/deepseek-v3.2` | **Web search**, **web fetch**, **MCP** (DeepWiki), model failover |
-| 3 | Analysis | `alibaba/qwen-3.5-35b-a3b` | **Code execution** (deadline + prize-per-effort maths in the sandbox) |
-| 4 | Brief | `deepseek/deepseek-v3.2` / `openai/gpt-oss-20b` | **Multi-model roles** |
+| 3 | Analysis | `deepseek/deepseek-v3.2` (12.7s vs 126–191s for `qwen-3.5-35b` on the same sandbox task) | **Code execution** (deadline + prize-per-effort maths in the sandbox) |
+| 4 | Brief | `openai/gpt-oss-20b` | **Multi-model roles** |
 | — | Seats | `seat-judge`, `seat-demo`, `seat-guest` | **Per-user (end-user) tracking** via an Otari service key; **workspace budget** ($1.50/month ceiling); automatic provider fallback |
 
 The UI shows, for each stage, the model that actually served it, its provider, whether a fallback happened, latency, cost, which gateway tool calls ran (with the sandbox code and stdout), and the guardrail verdict. Nothing is mocked: if a tool is unavailable the stage says so.
@@ -67,7 +67,7 @@ Evidence of live verification is in `docs/` (probe results, friction log, test r
 ## Known limitations
 - Some hackathon sites (including DoraHacks) block Otari's fetcher (HTTP 405); Kestrel then relies on search results and says `unknown` where it can't verify.
 - Per-user *budget limits* require an end-user budget attached to the service key, which hosted Otari only lets an operator assign; seats are tracked per user but not individually capped (see `docs/FEEDBACK-LOG.md`).
-- A research run costs roughly $0.10 and takes 1–2 minutes.
+- A full run costs roughly $0.05–0.10 and takes about 2–3 minutes (measured 167s on the live site, 2026-11-06).
 - Effort/EV figures appear only when a source states them; Kestrel never invents probabilities.
 
 ## License
