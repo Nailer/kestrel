@@ -23,7 +23,7 @@ Target: https://kestrel-inky-psi.vercel.app (Vercel prod) and local CLI harness.
 | T8 | Guardrail normal input | `evaluated`, valid | `{"valid":true,"status":"evaluated"}` | PASS |
 | T9 | Live app, injection in notes | pipeline stops | `fatal 403 Request blocked by guardrail policy` | PASS |
 | T10 | Live app, normal run in browser | 4 stages + brief | all done, brief correct | PASS |
-| T11 | No access code | 401 | 401 | PASS |
+| T11 | Invalid input paths (live) | 400 with clear message | no seat → `Unknown seat`; malformed key → "doesn't look like an Otari key" (access-code gate removed 2026-11-06 in favour of seats + own-key mode) | PASS |
 | T12 | Unknown seat id | 400 | `Unknown seat` | PASS |
 | T13 | Service key + `user` | accepted, spend tracked per end user | `/end-users` shows seat-demo, seat-guest with own spend | PASS |
 | T14 | Per-seat budget trip | 403 `budget_exceeded` | PASS 2026-11-06: `seat-guest` (spent $0.32 vs $0.15/day) → 403 `budget_exceeded`, `otari-budget-scope: user`, `retry-after`; same through the live app (`fatal … budget_exceeded`). Earlier (Nov 4) a seat tripped at $0.147 + request estimate | PASS |

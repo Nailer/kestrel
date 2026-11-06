@@ -39,6 +39,9 @@ export type ChatParams = {
   /** End-user id (requires a service key on the Otari side). */
   user?: string;
   signal?: AbortSignal;
+  /** Visitor-supplied Otari key (used for this request only, never stored or logged). */
+  apiKey?: string;
+  baseUrl?: string;
 };
 
 export class OtariError extends Error {
@@ -53,13 +56,14 @@ export class OtariError extends Error {
   }
 }
 
-export function baseUrl() {
+export function baseUrl(override?: string) {
+  if (override) return override.replace(/\/$/, "");
   return (process.env.OTARI_BASE_URL || "https://api.otari.ai/api/v1").replace(/\/$/, "");
 }
 
-function authHeaders(): Record<string, string> {
+function authHeaders(apiKey?: string): Record<string, string> {
   // A service key (dashboard: API keys → Service key) is required for per-user budgets (`user` field).
-  const key = process.env.OTARI_SERVICE_KEY || process.env.OTARI_API_KEY;
+  const key = apiKey || process.env.OTARI_SERVICE_KEY || process.env.OTARI_API_KEY;
   if (!key) throw new Error("OTARI_API_KEY is not set");
   return { Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
 }
@@ -112,10 +116,10 @@ export async function otariChat(p: ChatParams, retries = 2): ReturnType<typeof o
 }
 
 async function otariChatOnce(p: ChatParams) {
-  const { signal, ...body } = p;
-  const res = await fetch(`${baseUrl()}/chat/completions`, {
+  const { signal, apiKey, baseUrl: baseOverride, ...body } = p;
+  const res = await fetch(`${baseUrl(baseOverride)}/chat/completions`, {
     method: "POST",
-    headers: authHeaders(),
+    headers: authHeaders(apiKey),
     body: JSON.stringify(body),
     signal,
     cache: "no-store",
@@ -150,13 +154,13 @@ export type ToolAvailability = Record<string, { available: boolean; reason?: str
 let toolCache: { at: number; v: ToolAvailability } | undefined;
 
 /** GET /tools — which gateway-run tools this workspace may actually use. */
-export async function getToolAvailability(): Promise<ToolAvailability> {
-  if (toolCache && Date.now() - toolCache.at < 60_000) return toolCache.v;
-  const res = await fetch(`${baseUrl()}/tools`, { headers: authHeaders(), cache: "no-store" });
+export async function getToolAvailability(opts: { apiKey?: string; baseUrl?: string } = {}): Promise<ToolAvailability> {
+  if (!opts.apiKey && toolCache && Date.now() - toolCache.at < 60_000) return toolCache.v;
+  const res = await fetch(`${baseUrl(opts.baseUrl)}/tools`, { headers: authHeaders(opts.apiKey), cache: "no-store" });
   const json: any = await res.json().catch(() => ({}));
   const v: ToolAvailability = {};
   for (const t of json?.data ?? []) v[t.id] = { available: !!t.available, reason: t.reason };
-  toolCache = { at: Date.now(), v };
+  if (!opts.apiKey) toolCache = { at: Date.now(), v };
   return v;
 }
 

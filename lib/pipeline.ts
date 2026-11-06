@@ -62,20 +62,24 @@ const usr = (s: string): ChatMessage => ({ role: "user", content: s });
 export type RunInput = {
   url: string;
   notes?: string; // optional pasted page text (used when web tools are unavailable)
+  apiKey?: string; // visitor-supplied Otari key (bring-your-own-key mode)
+  baseUrl?: string;
   userId?: string; // end-user id for per-user budgets (needs an Otari service key)
   now?: Date;
 };
 
 export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
   const now = input.now ?? new Date();
-  const user = input.userId && process.env.OTARI_SERVICE_KEY ? input.userId : undefined;
+  const auth = input.apiKey ? { apiKey: input.apiKey, baseUrl: input.baseUrl } : {};
+  // Seats (end users) only exist on our own service key; a visitor's key bills their own account.
+  const user = !input.apiKey && input.userId && process.env.OTARI_SERVICE_KEY ? input.userId : undefined;
   const guardUrl = process.env.KESTREL_GUARDRAIL_URL; // our own /validate service, called by Otari
   const guardrails = guardUrl
     ? [{ profile: "prompt-injection", mode: "block", url: guardUrl }]
     : undefined;
 
   try {
-    const tools = await getToolAvailability();
+    const tools = await getToolAvailability(auth);
     const hasFetch = tools["otari_web_fetch"]?.available;
     const hasSearch = tools["otari_web_search"]?.available;
     const hasCode = tools["otari_code_execution"]?.available;
@@ -83,6 +87,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     // ── Stage 1: triage (small model) — also carries the input guardrail ─────────
     yield { type: "stage", role: "triage", status: "running" };
     const triage = await otariChat({
+      ...auth,
       model: ROLES.triage,
       max_tokens: 700,
       temperature: 0,
@@ -129,6 +134,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
       },
     ];
     const runResearch = (model: string) => otariChat({
+      ...auth,
       model,
       max_tokens: 3000,
       temperature: 0.1,
@@ -177,6 +183,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     yield { type: "stage", role: "analyst", status: "running" };
     const analystTools = hasCode ? [{ type: "otari_code_execution" }] : undefined;
     const analysis = await otariChat({
+      ...auth,
       model: ROLES.analyst,
       max_tokens: 4000,
       temperature: 0,
@@ -210,6 +217,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     // ── Stage 4: writer — strict JSON brief ─────────────────────────────────────
     yield { type: "stage", role: "writer", status: "running" };
     const write = await otariChat({
+      ...auth,
       model: ROLES.writer,
       max_tokens: 2500,
       temperature: 0.2,

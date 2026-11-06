@@ -8,35 +8,37 @@ type Stage = {
   role: string;
   status: "running" | "done" | "skipped" | "error";
   model?: string;
-  meta?: { provider?: string; model?: string; fallback?: boolean; attempts?: number; durationMs?: number; costUsd?: number; guardrails?: unknown };
+  meta?: { provider?: string; model?: string; fallback?: boolean; durationMs?: number; costUsd?: number };
   features?: string[];
   note?: string;
   toolCalls?: { id: string; type: string; status?: string; code?: string; stdout?: string }[];
 };
 
-const LABEL: Record<string, string> = {
-  triage: "Triage",
-  researcher: "Research",
-  analyst: "Analysis (sandbox)",
-  writer: "Brief",
-  guard: "Input guard",
-};
-
-const VERDICT_STYLE: Record<string, string> = {
+const LABEL: Record<string, string> = { triage: "1 · Triage", researcher: "2 · Research", analyst: "3 · Analysis (sandbox)", writer: "4 · Brief", guard: "Input guard" };
+const VERDICT: Record<string, string> = {
   go: "bg-emerald-100 text-emerald-900 border-emerald-300",
   maybe: "bg-amber-100 text-amber-900 border-amber-300",
   "no-go": "bg-rose-100 text-rose-900 border-rose-300",
 };
+const EXAMPLE = "https://dorahacks.io/hackathon/mozilla-devs-wilding";
+
+const HOW = [
+  ["Triage", "Mistral Small", "Reads your link, plans what must be verified. Your input is screened for prompt injection first (Otari guardrail)."],
+  ["Research", "gpt-oss-120b (fails over to DeepSeek)", "Searches the web, reads pages, and asks the sponsor's GitHub docs through an MCP server (Otari web search, web fetch, MCP)."],
+  ["Analysis", "DeepSeek V3.2", "Does every calculation by running real code in a sandbox: days left to the deadline, prize per effort day (Otari code execution)."],
+  ["Brief", "gpt-oss-20b", "Writes the go / maybe / no-go brief. Anything it could not verify is marked unknown, never guessed."],
+] as const;
 
 export default function Home() {
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
+  const [mode, setMode] = useState<"demo" | "key">("demo");
   const [seat, setSeat] = useState<string>(SEATS[0]);
+  const [apiKey, setApiKey] = useState("");
   const [stages, setStages] = useState<Stage[]>([]);
   const [brief, setBrief] = useState<Brief | null>(null);
   const [error, setError] = useState<{ message: string; code?: string; scope?: string; retry?: string } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [code, setCode] = useState("");
 
   async function run(e: React.FormEvent) {
     e.preventDefault();
@@ -47,8 +49,8 @@ export default function Home() {
     try {
       const res = await fetch("/api/scout", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-kestrel-code": code },
-        body: JSON.stringify({ url, notes, userId: seat }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mode === "key" ? { url, notes, apiKey } : { url, notes, userId: seat }),
       });
       if (!res.ok || !res.body) {
         const j = await res.json().catch(() => ({}));
@@ -67,11 +69,9 @@ export default function Home() {
           buf = buf.slice(i + 1);
           if (!line) continue;
           const ev = JSON.parse(line);
-          if (ev.type === "stage") {
-            setStages((prev) => [...prev.filter((s) => s.role !== ev.role), ev]);
-          } else if (ev.type === "brief") setBrief(ev.brief);
-          else if (ev.type === "fatal")
-            setError({ message: ev.error, code: ev.code, scope: ev.budgetScope, retry: ev.retryAfter });
+          if (ev.type === "stage") setStages((p) => [...p.filter((s) => s.role !== ev.role), ev]);
+          else if (ev.type === "brief") setBrief(ev.brief);
+          else if (ev.type === "fatal") setError({ message: ev.error, code: ev.code, scope: ev.budgetScope, retry: ev.retryAfter });
         }
       }
     } catch (err) {
@@ -83,39 +83,103 @@ export default function Home() {
 
   const used = Array.from(new Set(stages.flatMap((s) => s.features ?? [])));
   const cost = stages.reduce((a, s) => a + (s.meta?.costUsd ?? 0), 0);
+  const hours = (s?: string) => (s ? Math.max(1, Math.round(Number(s) / 3600)) : undefined);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 text-stone-900">
-      <header className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Kestrel</h1>
-        <p className="mt-1 text-stone-600">Scout a bounty before you spend a week on it. Paste a hackathon or bounty URL and get a verified go / no-go brief.</p>
+      {/* Hero */}
+      <header>
+        <p className="text-sm font-medium uppercase tracking-wide text-stone-500">Kestrel</p>
+        <h1 className="mt-1 text-4xl font-semibold tracking-tight">Scout a bounty before you spend a week on it.</h1>
+        <p className="mt-3 text-lg text-stone-700">
+          Paste the link to any hackathon or bounty. In about 2–3 minutes Kestrel reads the rules, researches the sponsor, works out the real deadline and odds with code, and tells you whether it is worth your time.
+        </p>
+        <a href="#try" className="mt-5 inline-block rounded bg-stone-900 px-5 py-2.5 font-medium text-white">Try it now ↓</a>
       </header>
 
-      <form onSubmit={run} className="space-y-3 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-        <label className="block text-sm font-medium" htmlFor="url">Opportunity URL</label>
-        <input id="url" required type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://dorahacks.io/hackathon/…" className="w-full rounded border border-stone-300 px-3 py-2" />
-        <details>
-          <summary className="cursor-pointer text-sm text-stone-600">Optional: paste page text (used when web tools are unavailable)</summary>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={5} className="mt-2 w-full rounded border border-stone-300 px-3 py-2 text-sm" />
-        </details>
-        <div className="flex flex-wrap items-end gap-3">
-          <div>
-            <label className="block text-sm font-medium" htmlFor="seat">Seat</label>
-            <select id="seat" value={seat} onChange={(e) => setSeat(e.target.value)} className="rounded border border-stone-300 px-3 py-2">
-              {SEATS.map((s) => <option key={s}>{s}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium" htmlFor="code">Access code</label>
-            <input id="code" type="password" value={code} onChange={(e) => setCode(e.target.value)} className="rounded border border-stone-300 px-3 py-2" autoComplete="off" />
-          </div>
-          <button disabled={busy} className="rounded bg-stone-900 px-4 py-2 text-white disabled:opacity-50">{busy ? "Scouting…" : "Scout it"}</button>
+      {/* What you get / who */}
+      <section className="mt-10 grid gap-4 sm:grid-cols-2" aria-label="What and who">
+        <div className="rounded-lg border border-stone-200 bg-white p-4">
+          <h2 className="font-semibold">What you get</h2>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-stone-700">
+            <li>A <b>go / maybe / no-go</b> verdict with the reason</li>
+            <li>Deadline, <b>days left</b> and prizes, with sources</li>
+            <li>Mandatory requirements and eligibility flags</li>
+            <li>Risks, plus a clear list of what is still <b>unknown</b></li>
+          </ul>
         </div>
-      </form>
+        <div className="rounded-lg border border-stone-200 bg-white p-4">
+          <h2 className="font-semibold">Who it is for</h2>
+          <p className="mt-2 text-sm text-stone-700">
+            Solo developers and small teams who chase hackathons and bounties for income and lose days to opportunities with hidden deadlines, ineligibility, or poor odds. Not a prediction tool: it never invents win probabilities.
+          </p>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="mt-10" aria-label="How it works">
+        <h2 className="text-xl font-semibold">How it works</h2>
+        <p className="mt-1 text-sm text-stone-600">Four different open-weight models, each with one job, all called through the <a className="underline" href="https://otari.ai">Otari</a> gateway.</p>
+        <ol className="mt-4 space-y-2">
+          {HOW.map(([name, model, text], i) => (
+            <li key={name} className="rounded border border-stone-200 bg-white p-3 text-sm">
+              <div className="font-medium">{i + 1}. {name} <span className="font-normal text-stone-500">· {model}</span></div>
+              <div className="mt-0.5 text-stone-700">{text}</div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Try it */}
+      <section id="try" className="mt-10 scroll-mt-6" aria-label="Try it">
+        <h2 className="text-xl font-semibold">Try it</h2>
+        <form onSubmit={run} className="mt-3 space-y-5 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+          <div>
+            <label className="block text-sm font-semibold" htmlFor="url">Step 1 · Paste a hackathon or bounty link</label>
+            <input id="url" required type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" className="mt-1 w-full rounded border border-stone-300 px-3 py-2" />
+            <button type="button" onClick={() => setUrl(EXAMPLE)} className="mt-1 text-sm text-stone-600 underline">Use an example (Mozilla Otari hackathon)</button>
+            <details className="mt-2">
+              <summary className="cursor-pointer text-sm text-stone-600">Optional: paste the page text (helps when a site blocks readers)</summary>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} className="mt-2 w-full rounded border border-stone-300 px-3 py-2 text-sm" />
+            </details>
+          </div>
+
+          <fieldset>
+            <legend className="text-sm font-semibold">Step 2 · Choose how to run it (no sign-up, no code)</legend>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              <label className={`cursor-pointer rounded border p-3 text-sm ${mode === "demo" ? "border-stone-900 bg-stone-50" : "border-stone-300"}`}>
+                <input type="radio" name="mode" className="mr-2" checked={mode === "demo"} onChange={() => setMode("demo")} />
+                <b>Free demo seat</b>
+                <p className="mt-1 text-stone-600">Uses our Otari account. Each seat has its own small daily budget ($0.15), enough for about one run. If a seat is used up, pick another or use your own key.</p>
+                {mode === "demo" && (
+                  <select aria-label="Demo seat" value={seat} onChange={(e) => setSeat(e.target.value)} className="mt-2 rounded border border-stone-300 px-2 py-1">
+                    {SEATS.map((s) => <option key={s}>{s}</option>)}
+                  </select>
+                )}
+              </label>
+              <label className={`cursor-pointer rounded border p-3 text-sm ${mode === "key" ? "border-stone-900 bg-stone-50" : "border-stone-300"}`}>
+                <input type="radio" name="mode" className="mr-2" checked={mode === "key"} onChange={() => setMode("key")} />
+                <b>Use your own Otari key</b>
+                <p className="mt-1 text-stone-600">
+                  Unlimited, billed to your own account. <a className="underline" href="https://otari.ai" target="_blank" rel="noreferrer">Create a free Otari account</a>, open <i>API keys</i>, create a key, paste it here. It is used for this request only and never stored.
+                </p>
+                {mode === "key" && (
+                  <input aria-label="Otari API key" type="password" autoComplete="off" value={apiKey} onChange={(e) => setApiKey(e.target.value)} required placeholder="otk_v1_…" className="mt-2 w-full rounded border border-stone-300 px-2 py-1" />
+                )}
+              </label>
+            </div>
+          </fieldset>
+
+          <div>
+            <div className="text-sm font-semibold">Step 3 · Scout it</div>
+            <button disabled={busy} className="mt-1 rounded bg-stone-900 px-5 py-2 font-medium text-white disabled:opacity-50">{busy ? "Scouting… (2–3 min)" : "Scout it"}</button>
+          </div>
+        </form>
+      </section>
 
       {stages.length > 0 && (
         <section className="mt-6" aria-label="Pipeline">
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-stone-500">Pipeline · every stage is a separate Otari call</h2>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-stone-500">Live pipeline · each stage is a separate Otari call</h2>
           <ol className="space-y-2">
             {stages.map((s) => (
               <li key={s.role} className="rounded border border-stone-200 bg-white p-3 text-sm">
@@ -127,9 +191,9 @@ export default function Home() {
                   <div className="mt-1 space-y-1 text-stone-600">
                     <div>
                       {s.meta?.model ?? s.model} via {s.meta?.provider ?? "?"}
-                      {s.meta?.fallback ? " · fallback used" : ""}
+                      {s.meta?.fallback ? " · provider fallback used" : ""}
                       {s.meta?.durationMs ? ` · ${(s.meta.durationMs / 1000).toFixed(1)}s` : ""}
-                      {s.meta?.costUsd !== undefined ? ` · $${s.meta.costUsd < 0.001 ? s.meta.costUsd.toFixed(5) : s.meta.costUsd.toFixed(4)}` : ""}
+                      {s.meta?.costUsd !== undefined ? ` · $${s.meta.costUsd.toFixed(4)}` : ""}
                     </div>
                     {s.features?.length ? <div>Otari features: {s.features.join(", ")}</div> : null}
                     {s.note && <div className="text-amber-700">{s.note}</div>}
@@ -150,9 +214,10 @@ export default function Home() {
 
       {error && (
         <div role="alert" className="mt-6 rounded border border-rose-300 bg-rose-50 p-4 text-sm text-rose-900">
-          <div className="font-semibold">{error.code === "budget_exceeded" ? `Budget reached for this seat${error.scope ? ` (${error.scope})` : ""}` : "Something went wrong"}</div>
-          <div className="mt-1">{error.message}</div>
-          {error.retry && <div className="mt-1">Resets in {error.retry}s.</div>}
+          <div className="font-semibold">{error.code === "budget_exceeded" ? "This demo seat has used its daily budget" : "Something went wrong"}</div>
+          <div className="mt-1">{error.code === "budget_exceeded" ? "Pick another demo seat above, come back after it resets" : error.message}
+            {error.code === "budget_exceeded" && error.retry ? ` (about ${hours(error.retry)} h)` : ""}
+            {error.code === "budget_exceeded" ? ", or choose “Use your own Otari key” for unlimited runs." : ""}</div>
         </div>
       )}
 
@@ -163,7 +228,7 @@ export default function Home() {
               <h2 className="text-xl font-semibold">{brief.name}</h2>
               {brief.sponsor && <div className="text-sm text-stone-600">{brief.sponsor}</div>}
             </div>
-            <span className={`rounded border px-2 py-1 text-sm font-semibold uppercase ${VERDICT_STYLE[brief.verdict] ?? ""}`}>{brief.verdict}</span>
+            <span className={`rounded border px-2 py-1 text-sm font-semibold uppercase ${VERDICT[brief.verdict] ?? ""}`}>{brief.verdict}</span>
           </div>
           <p className="mt-3">{brief.verdict_reason}</p>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -180,9 +245,11 @@ export default function Home() {
         </section>
       )}
 
-      {used.length > 0 && (
-        <p className="mt-6 text-xs text-stone-500">Otari features exercised this run: {used.join(" · ")} · total ${cost.toFixed(4)}</p>
-      )}
+      {used.length > 0 && <p className="mt-6 text-xs text-stone-500">Otari features exercised this run: {used.join(" · ")} · total ${cost.toFixed(4)}</p>}
+
+      <footer className="mt-12 border-t border-stone-200 pt-4 text-xs text-stone-500">
+        Built for Mozilla&apos;s Developers Wilding online hackathon with <a className="underline" href="https://otari.ai">Otari</a> (open-source AI gateway by Mozilla.ai). Briefs can be incomplete: sites that block readers leave fields “unknown”. Always check the official rules.
+      </footer>
     </main>
   );
 }

@@ -4,7 +4,7 @@
 
 Built for **Mozilla's Developers Wilding: Online hackathon** (https://dorahacks.io/hackathon/mozilla-devs-wilding).
 
-**Live demo:** https://kestrel-inky-psi.vercel.app (gated by an access code to protect the Otari budget; judges get the code in the submission)
+**Live demo:** https://kestrel-inky-psi.vercel.app — no sign-up and no access code. Pick a free demo seat (small daily budget each) or paste your own Otari key for unlimited runs (used for that request only, never stored).
 
 ## Problem
 Solo developers who chase hackathons and bounties lose days on opportunities with hidden deadlines, ineligibility, or poor odds. The facts live on JS-heavy pages, scattered docs and sponsor repos.
@@ -24,7 +24,7 @@ The UI shows, for each stage, the model that actually served it, its provider, w
 
 ## Architecture
 ```
-Browser ──POST /api/scout (NDJSON stream, x-kestrel-code)──▶ Next.js route (server only)
+Browser ──POST /api/scout (NDJSON stream; demo seat or visitor Otari key)──▶ Next.js route (server only)
                                                               │  OTARI_* keys never reach the browser
                                                               ▼
                          lib/pipeline.ts ──▶ Otari gateway (https://eu.api.otari.ai/api/v1)
@@ -44,7 +44,7 @@ cp .env.example .env.local   # fill in OTARI_API_KEY (+ OTARI_BASE_URL for EU ke
 npm run dev                  # http://localhost:3000
 npx tsx scripts/run-scout.ts https://dorahacks.io/hackathon/mozilla-devs-wilding   # CLI run
 ```
-Environment variables: see `.env.example`. `OTARI_SERVICE_KEY` (a *service key*) is needed for per-seat attribution; `KESTREL_ACCESS_CODE` gates the API; `KESTREL_GUARDRAIL_URL` points Otari at the validator (`https://<host>/api/guard`).
+Environment variables: see `.env.example`. `OTARI_SERVICE_KEY` (a *service key*) is needed for per-seat attribution; `KESTREL_GUARDRAIL_URL` points Otari at the validator (`https://<host>/api/guard`).
 
 Workspace prerequisites in the Otari dashboard: enable web access (Tools → Web search), optional MCP server registration.
 
@@ -60,7 +60,7 @@ Evidence of live verification is in `docs/` (probe results, friction log, test r
 
 ## Security notes
 - API keys live only in server env (Vercel encrypted env vars). `.env*` is git-ignored except `.env.example`.
-- The API is gated by an access code and a fixed seat allow-list so strangers can't mint end users or spend credit; a workspace spend ceiling caps total spend.
+- No shared secret to hand out: abuse is bounded by a fixed seat allow-list (visitors cannot mint end users), per-seat daily budgets ($0.15) and a workspace spend ceiling ($1.50/month). A visitor's own Otari key is validated by format, forwarded for that single request, and never stored or logged.
 - Fetched web content is untrusted: the research prompt forbids following instructions inside it.
 - The guardrail is a transparent **heuristic** (regex scoring), not an ML classifier. Request-level Otari guardrail entries carry no credential, so the validator endpoint is unauthenticated by design (stateless, input-capped). For production use a vendor profile (Lakera, Azure Prompt Shields) via the Otari dashboard.
 

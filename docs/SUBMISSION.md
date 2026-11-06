@@ -12,7 +12,7 @@ Deadline: **2026-11-11 23:59 UTC+1 (22:59 UTC)**. Submit by Nov 11 18:00 UTC at 
 | Public GitHub repo | https://github.com/Nailer/kestrel (**must be made public first**) |
 | Hackathon branch | `hackathon` |
 | First commit where Otari came in | https://github.com/Nailer/kestrel/commit/41a25e5 (verify the full SHA with `git rev-parse 41a25e5` after the repo is public) |
-| Live demo | https://kestrel-inky-psi.vercel.app — access code: see `KESTREL_ACCESS_CODE` in `kestrel/.env.local` (give it to judges in the description) |
+| Live demo | https://kestrel-inky-psi.vercel.app — no code needed: pick a free demo seat or paste an own Otari key |
 | PRs / issues opened on mozilla-ai/otari | none yet — see "Optional upstream issues" below |
 | Demo video (3–5 min, your own screen + voice, no AI) | you record: `docs/VIDEO-SCRIPT.md` |
 | Feedback screen recording (3–5 min) | you record: `docs/VIDEO-SCRIPT.md` |

@@ -7,7 +7,7 @@ Tips: 1080p, close other tabs, hide notifications, rehearse once. A cut-down ver
 |---|---|---|
 | 0:00 | Live site | "Solo devs lose days on hackathons with hidden deadlines or bad odds. Kestrel gives a go/no-go brief in about two minutes." |
 | 0:25 | Otari dashboard → Models/Overview | "Everything goes through hosted Otari. Four roles, four open-weight models." |
-| 0:45 | Paste `https://dorahacks.io/hackathon/mozilla-devs-wilding`, seat `seat-demo`, access code, **Scout it** | Narrate each stage as it appears. |
+| 0:45 | Paste `https://dorahacks.io/hackathon/mozilla-devs-wilding`, choose the free demo seat `seat-demo`, **Scout it** | Narrate each stage as it appears. |
 | 1:00 | Triage stage | "Mistral Small triages. The input is screened by a guardrail Otari calls on my own endpoint: prompt-injection check, mode block." |
 | 1:30 | Research stage, expand tool calls | "gpt-oss-120b (or the DeepSeek failover) runs gateway-side web search, web fetch, and an MCP call to DeepWiki. Note the failover banner if shown — gpt-oss returned empty text after its tool loop, so I fail over." |
 | 2:15 | Analysis stage, expand code | "Qwen/DeepSeek runs the date maths in Otari's sandbox — here's the code and stdout, the deadline countdown isn't guessed." |
