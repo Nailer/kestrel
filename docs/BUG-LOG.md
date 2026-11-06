@@ -11,3 +11,6 @@
 | B7 | P2 | "MCP"/"web" labelled as used when calls failed | feature tag checked presence not status | count only `completed` calls | tsc/lint pass; verified in next live run |
 | B8 | P3 | Cost shown as $0.0000 | 4-decimal formatting | 5 decimals under $0.001 | visual |
 | B9 | P1 (security) | Real service key written into tracked `.env.example` | user pasted key in wrong file | blanked before commit; history scanned: never committed/pushed | `git diff --cached` + history grep clean |
+| B10 | P2 | DeepWiki probe test 0 tools | `probe.mjs` had `ask_question` instead of `ask_wiki_question` | updated tool name | node scripts/probe.mjs |
+| B11 | P3 | Cost display regressed to $0.0000 after landing page redesign | commit 126b8b8 rewrote `page.tsx` and reverted `formatCost` | re-added `formatCost` (5 decimals for < $0.001) and guarded `days_remaining` | tsc/lint pass, visual |
+| B12 | P3 | `.env.example` misplaced comment and stale credential variable | removing access code left service key line separated from comment; dead credential var remained | reordered comment before key; removed dead credential var | inspection |

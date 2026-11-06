@@ -1,5 +1,6 @@
 # DoraHacks submission pack — Mozilla Otari Hackathon
 
+> **Superseded:** the up-to-date, copy-ready submission text is in `submission/` (FIELDS.md, description.md). The model table below is out of date.
 Deadline: **2026-11-11 23:59 UTC+1 (22:59 UTC)**. Submit by Nov 11 18:00 UTC at the latest.
 
 ## Fields (copy/paste)
@@ -30,8 +31,6 @@ Deadline: **2026-11-11 23:59 UTC+1 (22:59 UTC)**. Submit by Nov 11 18:00 UTC at 
 | Budgets / spending limits | workspace ceiling $1.50/month (dashboard Spend & budgets) | configured; **not yet tripped in a demo** |
 | Per-user budgets | seats are Otari end users (service key + `user`), each on the `kestrel-seat` budget ($0.15/day) | **enforced and verified 2026-11-06**: `seat-guest` over its cap gets 403 `budget_exceeded` (`otari-budget-scope: user`), both calling Otari directly and through the live app. Evidence: `docs/TEST-REPORT.md` T14 (friction: #23) |
 | Routing & fallbacks | automatic multi-provider fallback + app-level model failover | named policy `kestrel-research` not created yet (user step U5) |
-
-Be exact in the video: say "tracked per user" not "capped per user" unless U4 is done.
 
 ## Optional upstream issues (genuine findings only — good for the "PRs/issues" field)
 From `docs/FEEDBACK-LOG.md`: #11 (silent no-op on mismatched `allowed_tools`), #14 (empty content after tool loop), #22 (request-level guardrail has no credential; failures give no reason), #23 (end-user budget setup: header by name rejected, by id accepted; existing users need PATCH by id). Open issues yourself at https://github.com/mozilla-ai/otari/issues in your own words, then paste the links above.

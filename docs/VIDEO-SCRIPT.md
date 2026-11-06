@@ -19,7 +19,7 @@ Tips: 1080p, close other tabs, hide notifications, rehearse once. A cut-down ver
 ## Video 2 — Otari feedback (3–5 min), answer these on screen
 1. What did you build with Otari and which features? (walk through quickly)
 2. What worked well? (e.g. one OpenAI-compatible endpoint, gateway-run tools returning `otari_tool_calls` evidence, Otari-* headers)
-3. What didn't work? Reproduce on screen. Candidates you actually hit (see `docs/FEEDBACK-LOG.md` for details/evidence): web tools disabled by default; MCP wrong tool name = silent no-op; empty content after tool loop; guardrail `url` has no credential and failures say only `evaluation_failed`; per-user budgets not assignable on hosted; admin endpoints reject normal keys.
+3. What didn't work? Reproduce on screen. Candidates you actually hit (see `docs/FEEDBACK-LOG.md` for details/evidence): web tools disabled by default; MCP wrong tool name = silent no-op; empty content after tool loop; guardrail `url` has no credential and failures say only `evaluation_failed`; per-user budgets setup friction (name vs ID); admin endpoints reject normal keys.
 4. What's missing / what would you change?
 
 ## Written feedback (write in your own words, honestly — only what you really felt)

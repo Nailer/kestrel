@@ -1,6 +1,8 @@
 // Verifies gateway tools end to end. Usage: node scripts/tool-check.mjs
-import { readFileSync } from "node:fs";
-for (const l of readFileSync(".env.local", "utf8").split("\n")) { const m = l.match(/^([A-Z0-9_]+)=(.*)$/); if (m) process.env[m[1]] = m[2]; }
+import { readFileSync, existsSync } from "node:fs";
+if (existsSync(".env.local")) {
+  for (const l of readFileSync(".env.local", "utf8").split("\n")) { const m = l.match(/^([A-Z0-9_]+)=(.*)$/); if (m) process.env[m[1]] = m[2]; }
+}
 const B = process.env.OTARI_BASE_URL, H = { Authorization: `Bearer ${process.env.OTARI_API_KEY}`, "Content-Type": "application/json" };
 const tools = await (await fetch(`${B}/tools`, { headers: H })).json();
 for (const t of tools.data) console.log(t.id, t.available, t.reason ?? "");

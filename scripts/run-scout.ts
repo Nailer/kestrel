@@ -10,6 +10,10 @@ if (existsSync(".env.local")) {
   }
 }
 const [url, notesFile] = process.argv.slice(2);
+if (!url) {
+  console.error("Usage: npx tsx scripts/run-scout.ts <url> [notes-file]");
+  process.exit(1);
+}
 const notes = notesFile ? readFileSync(notesFile, "utf8") : undefined;
 async function main() {
   const t0 = Date.now();

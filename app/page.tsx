@@ -83,7 +83,11 @@ export default function Home() {
 
   const used = Array.from(new Set(stages.flatMap((s) => s.features ?? [])));
   const cost = stages.reduce((a, s) => a + (s.meta?.costUsd ?? 0), 0);
-  const hours = (s?: string) => (s ? Math.max(1, Math.round(Number(s) / 3600)) : undefined);
+  const formatCost = (c: number) => (c < 0.001 ? c.toFixed(5) : c.toFixed(4));
+  const hours = (s?: string) => {
+    const n = Number(s);
+    return Number.isFinite(n) && n > 0 ? Math.max(1, Math.round(n / 3600)) : undefined;
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 text-stone-900">
@@ -193,7 +197,7 @@ export default function Home() {
                       {s.meta?.model ?? s.model} via {s.meta?.provider ?? "?"}
                       {s.meta?.fallback ? " · provider fallback used" : ""}
                       {s.meta?.durationMs ? ` · ${(s.meta.durationMs / 1000).toFixed(1)}s` : ""}
-                      {s.meta?.costUsd !== undefined ? ` · $${s.meta.costUsd.toFixed(4)}` : ""}
+                      {s.meta?.costUsd !== undefined ? ` · $${formatCost(s.meta.costUsd)}` : ""}
                     </div>
                     {s.features?.length ? <div>Otari features: {s.features.join(", ")}</div> : null}
                     {s.note && <div className="text-amber-700">{s.note}</div>}
@@ -233,7 +237,7 @@ export default function Home() {
           <p className="mt-3">{brief.verdict_reason}</p>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <Item k="Deadline (UTC)" v={brief.deadline_iso ?? "unknown"} />
-            <Item k="Days remaining (computed in sandbox)" v={brief.days_remaining != null ? brief.days_remaining.toFixed(1) : "unknown"} />
+            <Item k="Days remaining (computed in sandbox)" v={typeof brief.days_remaining === "number" ? brief.days_remaining.toFixed(1) : (brief.days_remaining != null ? String(brief.days_remaining) : "unknown")} />
             <Item k="Prize" v={brief.prize_summary ?? "unknown"} />
             <Item k="Effort estimate (days)" v={brief.effort_days_estimate != null ? String(brief.effort_days_estimate) : "unknown"} />
           </dl>
@@ -245,7 +249,7 @@ export default function Home() {
         </section>
       )}
 
-      {used.length > 0 && <p className="mt-6 text-xs text-stone-500">Otari features exercised this run: {used.join(" · ")} · total ${cost.toFixed(4)}</p>}
+      {used.length > 0 && <p className="mt-6 text-xs text-stone-500">Otari features exercised this run: {used.join(" · ")} · total ${formatCost(cost)}</p>}
 
       <footer className="mt-12 border-t border-stone-200 pt-4 text-xs text-stone-500">
         Built for Mozilla&apos;s Developers Wilding online hackathon with <a className="underline" href="https://otari.ai">Otari</a> (open-source AI gateway by Mozilla.ai). Briefs can be incomplete: sites that block readers leave fields “unknown”. Always check the official rules.

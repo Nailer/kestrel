@@ -123,7 +123,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
     const researchTools: Array<Record<string, unknown>> = [];
     if (hasFetch) researchTools.push({ type: "otari_web_fetch" });
     if (hasSearch) researchTools.push({ type: "otari_web_search", max_uses: 3 });
-    const repo = (input.url.match(GITHUB_RE) ?? (input.notes ?? "").match(GITHUB_RE))?.[1];
+    const repo = (input.url?.match(GITHUB_RE) ?? (input.notes ?? "").match(GITHUB_RE))?.[1];
     // DeepWiki MCP is always offered; the researcher decides whether a sponsor repo is worth querying.
     const mcp_servers = [
       {
