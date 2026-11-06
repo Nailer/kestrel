@@ -158,9 +158,9 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
       research = await runResearch(alt);
     }
     const rFeatures = ["multi-model roles"];
-    if (hasFetch) rFeatures.push("web fetch");
-    if (hasSearch) rFeatures.push("web search");
-    if (research.toolCalls.some((t) => t.type === "mcp")) rFeatures.push("MCP"); // only count it if the gateway really ran it
+    if (hasFetch && research.toolCalls.some((t) => t.type === "web_fetch" && t.status === "completed")) rFeatures.push("web fetch");
+    if (hasSearch && research.toolCalls.some((t) => t.type === "web_search" && t.status === "completed")) rFeatures.push("web search");
+    if (research.toolCalls.some((t) => t.type === "mcp" && t.status === "completed")) rFeatures.push("MCP"); // only count it if the gateway really ran it
     yield {
       type: "stage",
       role: "researcher",
@@ -201,7 +201,7 @@ export async function* runScout(input: RunInput): AsyncGenerator<StageEvent> {
       status: "done",
       model: ROLES.analyst,
       meta: analysis.meta,
-      features: ["multi-model roles", ...(hasCode ? ["code execution"] : [])],
+      features: ["multi-model roles", ...(hasCode && analysis.toolCalls.some((t) => t.type === "code_execution" && t.status === "completed") ? ["code execution"] : [])],
       toolCalls: analysis.toolCalls,
       output: numbers,
       note: hasCode ? undefined : "Code execution unavailable; numbers are model-estimated and flagged.",

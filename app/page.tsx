@@ -129,7 +129,7 @@ export default function Home() {
                       {s.meta?.model ?? s.model} via {s.meta?.provider ?? "?"}
                       {s.meta?.fallback ? " · fallback used" : ""}
                       {s.meta?.durationMs ? ` · ${(s.meta.durationMs / 1000).toFixed(1)}s` : ""}
-                      {s.meta?.costUsd !== undefined ? ` · $${s.meta.costUsd.toFixed(4)}` : ""}
+                      {s.meta?.costUsd !== undefined ? ` · $${s.meta.costUsd < 0.001 ? s.meta.costUsd.toFixed(5) : s.meta.costUsd.toFixed(4)}` : ""}
                     </div>
                     {s.features?.length ? <div>Otari features: {s.features.join(", ")}</div> : null}
                     {s.note && <div className="text-amber-700">{s.note}</div>}

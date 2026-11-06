@@ -25,3 +25,7 @@ Written by the build agent from real observed API behaviour on 2026-11-04. The s
 | 19 | Automatic provider fallback observed live: `gpt-oss-120b` request returned `otari-fallback: true`, `attempts: 2` (DeepInfra → OVHcloud) after an upstream 429 "Model busy" | run-scout | Positive: works transparently |
 | 20 | Same task (code-execution date math) latency: deepseek-v3.2 12.7s, gpt-oss-20b 8.8s, gpt-oss-120b 28s, qwen-3.5-35b 126–191s | measured | Reasoning-heavy models make tool loops very slow |
 | 21 | Transient `fetch failed` / 429 mid-run; added client retry | run-scout | |
+| 18 | Request-level guardrail entry accepts `url` but (per OpenAPI `GuardrailConfig`) no `credential`; credentials exist only on org mandates. A validator that requires a bearer token silently fails with `evaluation_failed` and no hint why | OpenAPI + debugging | Hours of guessing; the failure reason isn't surfaced to the caller |
+| 19 | Per-user budgets on hosted: service key + `user` field creates end users with their own spend tracking, but `budget_id` stays null. A service key may not assign a budget (`end_user_budget_not_allowed`) and `/budgets` needs a master key; the Create-key dialog has no field for `end_user_budget_ids` | API probes | Per-user *limits* are not achievable by a hosted user without an operator |
+| 20 | Positive: guardrail 403 body names profile, explanation and score; `/end-users` shows per-seat spend | | |
+| 21 | Vercel `vercel link` rewrote `.env.local` and needs `--team` non-interactively; unrelated to Otari | | |
