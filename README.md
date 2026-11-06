@@ -66,7 +66,7 @@ Evidence of live verification is in `docs/` (probe results, friction log, test r
 
 ## Known limitations
 - Some hackathon sites (including DoraHacks) block Otari's fetcher (HTTP 405); Kestrel then relies on search results and says `unknown` where it can't verify.
-- Per-seat limits come from an Otari **service key** whose *End-user budgets* include `kestrel-seat` ($0.15/day, set as the default). Each seat's spend is capped independently; a seat over its cap gets `403 budget_exceeded`, which the UI shows as "Budget reached for this seat". Setting this up in the dashboard is fiddly (see `docs/FEEDBACK-LOG.md` #19).
+- Per-seat limits come from an Otari **service key** whose *End-user budgets* include `kestrel-seat` ($0.15/day, set as the default). Each seat's spend is capped independently; a seat over its cap gets `403 budget_exceeded`, which the UI shows as "Budget reached for this seat". Setting this up in the dashboard is fiddly (see `docs/FEEDBACK-LOG.md` #23).
 - A full run costs roughly $0.05–0.10 and takes about 2–3 minutes (measured 167s on the live site, 2026-11-06).
 - Effort/EV figures appear only when a source states them; Kestrel never invents probabilities.
 
