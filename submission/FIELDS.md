@@ -5,7 +5,7 @@ Open it in Finder: `open "/Users/aje/Documents/Github/december sprint/kestrel/su
 
 | Form field | Paste this |
 |---|---|
-| **Upload Logo** | `submission/logo.png` (800×800 PNG, same icon as the site favicon) |
+| **Upload Logo** | `submission/logo.png` (1024×1024 PNG: white-and-amber K monogram, same mark as the site favicon) |
 | **Name of your Build** | `Kestrel` |
 | **Brief description of this Build** | `Paste a hackathon or bounty link and get a verified go/no-go brief in ~3 minutes, built on Otari with four open-weight models.` |
 | **Tags** | `otari` · `open-weight-models` · `llm-gateway` · `mcp` · `ai-agents` · `developer-tools` |

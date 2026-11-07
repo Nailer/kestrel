@@ -93,7 +93,11 @@ export default function Home() {
     <main className="mx-auto max-w-3xl px-4 py-10 text-stone-900">
       {/* Hero */}
       <header>
-        <p className="text-sm font-medium uppercase tracking-wide text-stone-500">Kestrel</p>
+        <div className="flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" alt="" width={44} height={44} className="rounded-xl" />
+          <span className="text-xl font-semibold tracking-tight">Kestrel</span>
+        </div>
         <h1 className="mt-1 text-4xl font-semibold tracking-tight">Scout a bounty before you spend a week on it.</h1>
         <p className="mt-3 text-lg text-stone-700">
           Paste the link to any hackathon or bounty. In about 2–3 minutes Kestrel reads the rules, researches the sponsor, works out the real deadline and odds with code, and tells you whether it is worth your time.
