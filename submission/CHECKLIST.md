@@ -20,7 +20,7 @@ Deadline: **2026-11-11 23:59 UTC+1 = 22:59 UTC.** Aim to submit by Nov 11 18:00 
 |---|---|---|---|
 | ≥1 open-weight model, meaningfully | 20 | yes | say it in the video |
 | ≥2 open-weight models in different roles | +10 | yes (4 families) | show the per-stage model list |
-| Otari features, 10 each, cap 60 (routing/fallback, MCP, web search/fetch, code exec, budgets, multi-model roles, guardrails, per-user budgets) | 60 | 8 of 8 used | **only counts if the app uses it** — in the video run one real scout and point at each tool call in the pipeline panel |
+| Otari features, 10 each, cap 60 (routing/fallback, MCP, web search/fetch, code exec, budgets, multi-model roles, guardrails, per-user budgets) | 60 | 7 verified live + routing policy once you create it (cap is 60, so 6 suffice) | **only counts if the app uses it** — in the video run one real scout and point at each tool call in the pipeline panel |
 | Works + real use case | 5 | yes | run it live, once, end to end |
 | Video clearly explains Otari integration and shows capabilities | 5 | depends on you | follow `docs/VIDEO-SCRIPT.md`; say which feature each stage uses |
 
@@ -39,3 +39,10 @@ Deadline: **2026-11-11 23:59 UTC+1 = 22:59 UTC.** Aim to submit by Nov 11 18:00 
 - File the 3 issues in `ISSUE-DRAFTS.md` (≈10 min) — the form asks for them and maintainers read them.
 - In the feedback video use `docs/FEEDBACK-LOG.md` as a reminder of what actually cost time (web tools disabled by default, MCP silent no-op, service-key budget setup).
 - Prize is 1st $1,000 + 3h with Mozilla.ai engineers; 2nd $200; 3rd 1h. Ask for the mentoring time to be about routing and hosted guardrails.
+
+## E. Updated 2026-11-09 after the rubric review
+- MCP is now its own stage and runs deterministically every time a sponsor repo is known (GitHub link, or Otari/known sponsors). Verified live: `mcp:completed`.
+- The guardrail verdict (`Otari-Guardrails` header: valid, score, mode) and failed-tool-call reasons are now shown in the UI.
+- Three examples on the page: a GitHub PR (fetch works), DoraHacks with the pasted rules (so the brief is rich), and a Devpost list.
+- Each model is labelled open-weight (with licence) in the pipeline panel.
+- The description's routing-policy wording is only true after you create policy `kestrel-research` AND set `KESTREL_ROUTING_POLICY=kestrel-research` in Vercel. If you skip that, delete "via Otari routing policy `kestrel-research`, DeepSeek V3.2 as backup" and "routing policy and" from `description.md`, and do not claim routing in the video.

@@ -10,14 +10,15 @@ Built for **Mozilla's Developers Wilding: Online hackathon** (https://dorahacks.
 Solo developers who chase hackathons and bounties lose days on opportunities with hidden deadlines, ineligibility, or poor odds. The facts live on JS-heavy pages, scattered docs and sponsor repos.
 
 ## What it does
-Four distinct model roles, each a separate Otari call (all open-weight):
+Four open-weight model families in five separate Otari calls (each stage is its own call):
 
 | Stage | Role | Model (default) | Otari features used |
 |---|---|---|---|
 | 1 | Triage + input guard | `mistralai/mistral-small-3.2-24b-instruct-2506` | **Guardrails** (custom prompt-injection service), **multi-model roles** |
-| 2 | Research | `openai/gpt-oss-120b`, failover `deepseek/deepseek-v3.2` | **Web search**, **web fetch**, **MCP** (DeepWiki), model failover |
-| 3 | Analysis | `deepseek/deepseek-v3.2` (12.7s vs 126–191s for `qwen-3.5-35b` on the same sandbox task) | **Code execution** (deadline + prize-per-effort maths in the sandbox) |
-| 4 | Brief | `openai/gpt-oss-20b` | **Multi-model roles** |
+| 2 | Sponsor docs | `openai/gpt-oss-120b` | **MCP**: one managed DeepWiki `ask_wiki_question` call per run on the sponsor's repo (repo taken from a GitHub link or a known-sponsor map; skipped and said so otherwise) |
+| 3 | Research | `openai/gpt-oss-120b`, failover `deepseek/deepseek-v3.2` → `qwen-3.5-35b`; optionally called through the Otari **routing policy** named by `KESTREL_ROUTING_POLICY` | **Web search**, **web fetch**, **routing and fallbacks** (only when the policy or an Otari provider fallback really served the call) |
+| 4 | Analysis | `deepseek/deepseek-v3.2` (12.7s vs 126–191s for `qwen-3.5-35b` on the same sandbox task) | **Code execution** (deadline + prize-per-effort maths in the sandbox) |
+| 5 | Brief | `openai/gpt-oss-20b` | **Multi-model roles** |
 | — | Seats | `seat-judge`, `seat-demo`, `seat-guest` | **Per-user budgets** (Otari service key + `user` field; each seat capped at $0.15/day, `403 budget_exceeded` when exceeded); **workspace budget** ($1.50/month ceiling); automatic provider fallback |
 
 The UI shows, for each stage, the model that actually served it, its provider, whether a fallback happened, latency, cost, which gateway tool calls ran (with the sandbox code and stdout), and the guardrail verdict. Nothing is mocked: if a tool is unavailable the stage says so.
@@ -29,7 +30,8 @@ Browser ──POST /api/scout (NDJSON stream; demo seat or visitor Otari key)─
                                                               ▼
                          lib/pipeline.ts ──▶ Otari gateway (https://eu.api.otari.ai/api/v1)
                            triage  ─ guardrails:[{profile:"prompt-injection", url:<our /api/guard>}]
-                           research─ tools:[otari_web_search, otari_web_fetch] + mcp_servers:[deepwiki]
+                           docs    ─ mcp_servers:[deepwiki]  (forced, retried once if the model skips the tool)
+                           research─ model: <routing policy | gpt-oss-120b>, tools:[otari_web_search, otari_web_fetch]
                            analysis─ tools:[otari_code_execution]
                            brief   ─ strict JSON
 Otari ──POST /api/guard/validate──▶ lib/guard.ts   (heuristic prompt-injection screen)
