@@ -36,7 +36,7 @@ See `docs/BUG-LOG.md`.
 ## Added 2026-11-09 (rubric pass)
 | # | Test | Expected | Actual | Result |
 |---|---|---|---|---|
-| T15 | Run on `github.com/mozilla-ai/otari/pull/2673` (CLI harness, service key) | docs stage runs MCP deterministically; guardrail verdict shown | triage guardrail `{valid:true, score:0, status:"evaluated"}`; docs stage `mcp:completed` in 23.7 s; research web_search/web_fetch completed; analysis `code_execution:completed`; total 133 s, about $0.06 | PASS |
-| T16 | Same run: researcher gpt-oss-120b | non-empty text | empty text again, failed over to deepseek-v3.2 (recorded in the stage note) | KNOWN ISSUE (handled) |
-| T17 | Live production, injection in notes (seat-guest) | blocked before any model | `fatal 403 "Request blocked by guardrail policy."` | PASS |
-| T18 | Otari web fetch on candidate example links | readable | github.com repo/PR/issue and devpost.com/hackathons PASS; ethglobal.com and dorahacks.io fail | examples changed to readable links |
+| T17 | Run on `github.com/mozilla-ai/otari/pull/2673` (CLI harness, service key) | docs stage runs MCP deterministically; guardrail verdict shown | triage guardrail `{valid:true, score:0, status:"evaluated"}`; docs stage `mcp:completed` in 23.7 s; research web_search/web_fetch completed; analysis `code_execution:completed`; total 133 s, about $0.06 | PASS |
+| T18 | Same run: researcher gpt-oss-120b | non-empty text | empty text again, failed over to deepseek-v3.2 (recorded in the stage note) | KNOWN ISSUE (handled) |
+| T19 | Live production, injection in notes (seat-guest) | blocked before any model | `fatal 403 "Request blocked by guardrail policy."` | PASS |
+| T20 | Otari web fetch on candidate example links | readable | github.com repo/PR/issue and devpost.com/hackathons PASS; ethglobal.com and dorahacks.io fail | examples changed to readable links |
