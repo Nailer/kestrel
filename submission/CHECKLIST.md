@@ -1,5 +1,8 @@
 # What is left — validity first, then points (researched 2026-11-06)
 
+> **CORRECTION 2026-11-09:** otari.ai/devs-wilding says registration AND submission are by EMAIL to marcus+wilding@mozilla.org ("reply to your sign-up email thread"). Missing items in that email = not eligible for prizes. Use `submission/EMAIL-SUBMISSION.md`. The DoraHacks form is optional extra; the email is the one that counts. Earlier lines below that say "register on DoraHacks" should be read as "register by email".
+
+
 Sources: DoraHacks page + rubric doc (read), Eventbrite page, otari GitHub issues/PRs. **Discord was not readable** (login required) — ask there for anything not listed.
 Deadline: **2026-11-11 23:59 UTC+1 = 22:59 UTC.** Aim to submit by Nov 11 18:00 UTC. Registered hackers: 97 (was 78 on Nov 4).
 
