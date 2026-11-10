@@ -7,13 +7,13 @@ Sources: DoraHacks page + rubric doc (read), Eventbrite page, otari GitHub issue
 Deadline: **2026-11-11 23:59 UTC+1 = 22:59 UTC.** Aim to submit by Nov 11 18:00 UTC. Registered hackers: 97 (was 78 on Nov 4).
 
 ## A. Validity — miss any of these and you are "not eligible for prizes" (organizer's words)
-- [ ] Registered on DoraHacks: name/pseudonym, **the email you use on Otari.ai**, one-line project.
-- [ ] Signed up at otari.ai (done) with that same email.
+- [x] Registered by EMAIL to marcus+wilding@mozilla.org (you confirmed 2026-11-09). DoraHacks form is optional.
+- [x] Signed up at otari.ai with that same email.
 - [ ] Joined the Mozilla OSAI Discord + took the `devs-wilding` role (updates and questions).
 - [ ] Starred https://github.com/mozilla-ai/otari
-- [ ] **GitHub repo is PUBLIC** (it is private now) + branch name `hackathon`.
-- [ ] First-commit link: `https://github.com/Nailer/kestrel/commit/41a25e52d63caea1af691d1f970fe5d0496b4d1b`
-- [ ] Otari features used — listed in `description.md`.
+- [x] **GitHub repo is PUBLIC** + branch name `hackathon`.
+- [x] First-commit link: `https://github.com/Nailer/kestrel/commit/41a25e52d63caea1af691d1f970fe5d0496b4d1b`
+- [x] Otari features used — listed in `description.md` and `EMAIL-SUBMISSION.md`.
 - [ ] Issues/PRs opened on the Otari repo (optional field; drafts in `ISSUE-DRAFTS.md`).
 - [ ] **Demo video, 3–5 min**, screen recording WITH your own voice. No AI voiceover/AI-generated video.
 - [ ] **Feedback**: screen recording 3–5 min answering the 4 questions, and/or written answers to the 3 questions — do both.

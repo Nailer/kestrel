@@ -36,7 +36,7 @@ Browser ──POST /api/scout (NDJSON stream; demo seat or visitor Otari key)─
                            brief   ─ strict JSON
 Otari ──POST /api/guard/validate──▶ lib/guard.ts   (heuristic prompt-injection screen)
 ```
-Key files: `lib/otari.ts` (client), `lib/pipeline.ts` (stages), `lib/guard.ts` + `app/api/guard/*` (guardrail service), `lib/seats.ts`, `app/page.tsx`.
+Routes: `/` is the landing page (hero, scroll-driven animation `components/Flow.tsx`, how it works, Otari features); `/scout` is the app. Key files: `lib/otari.ts` (client), `lib/pipeline.ts` (stages), `lib/guard.ts` + `app/api/guard/*` (guardrail service), `lib/seats.ts`, `app/page.tsx` (landing), `app/scout/page.tsx` (app).
 
 ## Run locally
 Prereqs: Node 20+, an Otari account and API key (https://otari.ai).

@@ -7,15 +7,15 @@ Before recording: one warm-up run the day before (so you know it works), close o
 
 | Time | Show | Say (in your own words) | Rubric points it proves |
 |---|---|---|---|
-| 0:00 | Live site top | "Solo devs lose days on hackathons with hidden deadlines or bad odds. Kestrel gives a go/no-go brief in about two minutes." | project + real use case |
-| 0:25 | Scroll the "How it works" list | "Five stages, four open-weight model families, every call goes through hosted Otari." | open-weight models (30) |
-| 0:45 | Click **Otari hackathon announcement (GitHub)** example, pick seat `seat-judge`, **Scout it** | Narrate each stage as it appears. | — |
+| 0:00 | Landing page: hero, then slowly scroll the animation until the word Otari appears | "Solo devs lose days on hackathons with hidden deadlines or bad odds. Kestrel gives a go/no-go brief in about two minutes." | project + real use case |
+| 0:25 | Landing page: scroll past the animation to the "Five stages" list | "Five stages, four open-weight model families, every call goes through hosted Otari." | open-weight models (30) |
+| 0:45 | Scroll to the end, press **Open the app** (the /scout page). Click the **Otari announcement (GitHub)** chip, keep seat `seat-judge`, press **Scout this link** | Narrate each stage as it appears. | — |
 | 1:00 | Stage 1 (triage) | "Mistral Small. Otari calls my own validator before the model sees the text. Here is the verdict header: valid, score 0, mode block." (point at the *Guardrail verdict* line) | guardrails |
 | 1:30 | Stage 2 (sponsor docs) + expand `mcp` tool call | "gpt-oss-120b asks the sponsor's repo docs through a managed MCP server (DeepWiki). The gateway ran the call, here is the tool-call record." | MCP |
 | 2:00 | Stage 3 (research) + expand web_search / web_fetch | "Web search and web fetch run inside Otari. A failed fetch shows why. If gpt-oss returns empty text, Kestrel fails over to DeepSeek; Otari's routing policy handles provider failures." Point at the routing/policy line if shown. | web search/fetch, routing and fallbacks |
 | 2:30 | Stage 4 (analysis) + expand code | "DeepSeek runs the date maths in Otari's sandbox; here is the code and its output." | code execution |
 | 3:00 | Brief | Verdict, deadline, days remaining, "unknown" list. Point at the bottom line: features exercised, total cost, per-user budget "seat-judge". | project works |
-| 3:20 | Guardrail demo: **Optional: paste the page text → Test the guardrail**, Scout | "Blocked before any model ran: Otari returned 403 guardrail_violation." | guardrails (shown blocking) |
+| 3:20 | Guardrail demo: **Page text (optional) → Test the guardrail with a prompt-injection attack**, Scout | "Blocked before any model ran: Otari returned 403 guardrail_violation." | guardrails (shown blocking) |
 | 3:45 | Per-user budget: choose an exhausted seat (see "Budget proof" below) and Scout | "Each seat is an Otari end user with a $0.15/day budget. Over budget: 403 budget_exceeded, with the reset time." | per-user budgets, budgets and spending limits |
 | 4:10 | Otari dashboard → Requests (rows by model) → Spend & budgets (the $1.50 workspace ceiling, the seat budget) | "Four models in the requests list. Budget policy is set in the dashboard and enforced by the gateway." | multi-model, budgets |
 | 4:40 | GitHub repo, README table | "Open source; README lists each stage's Otari feature." | — |
