@@ -49,3 +49,7 @@ Deadline: **2026-11-11 23:59 UTC+1 = 22:59 UTC.** Aim to submit by Nov 11 18:00 
 - Three examples on the page: a GitHub PR (fetch works), DoraHacks with the pasted rules (so the brief is rich), and a Devpost list.
 - Each model is labelled open-weight (with licence) in the pipeline panel.
 - The description's routing-policy wording is only true after you create policy `kestrel-research` AND set `KESTREL_ROUTING_POLICY=kestrel-research` in Vercel. If you skip that, delete "via Otari routing policy `kestrel-research`, DeepSeek V3.2 as backup" and "routing policy and" from `description.md`, and do not claim routing in the video.
+
+## F. Done 2026-11-10 (in the Otari dashboard, via Chrome)
+- Routing policy `kestrel-research` created (main gpt-oss-120b on DeepInfra, backup DeepSeek V3.2 on DeepInfra, applies to every caller). `KESTREL_ROUTING_POLICY=kestrel-research` set in Vercel Production and redeployed. Verified on the live site: the Research stage reports "Called through Otari routing policy kestrel-research" and lists "routing and fallbacks".
+- The workspace ceiling `kestrel-workspace-cap` was $1.50/month with about $1.48 already spent, which would have refused runs; raised to $5.00/month with your approval (wallet $20.52). It resets on the 1st at 00:00 UTC. The routing line in `description.md` and `EMAIL-SUBMISSION.md` is now TRUE; keep it.

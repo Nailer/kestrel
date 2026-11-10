@@ -27,7 +27,7 @@ Target: https://kestrel-inky-psi.vercel.app (Vercel prod) and local CLI harness.
 | T12 | Unknown seat id | 400 | `Unknown seat` | PASS |
 | T13 | Service key + `user` | accepted, spend tracked per end user | `/end-users` shows seat-demo, seat-guest with own spend | PASS |
 | T14 | Per-seat budget trip | 403 `budget_exceeded` | PASS 2026-11-06: `seat-guest` (spent $0.32 vs $0.15/day) → 403 `budget_exceeded`, `otari-budget-scope: user`, `retry-after`; same through the live app (`fatal … budget_exceeded`). Earlier (Nov 4) a seat tripped at $0.147 + request estimate | PASS |
-| T15 | Workspace ceiling $1.50/month | created | visible in Spend & budgets | CONFIGURED (not tripped) |
+| T15 | Workspace ceiling $5.00/month | created | visible in Spend & budgets | CONFIGURED (not tripped) |
 | T16 | Mobile 375px | no overflow, readable | scrollWidth 375, light theme | PASS |
 
 ## Defects

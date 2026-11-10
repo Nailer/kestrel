@@ -18,7 +18,7 @@ Paste a hackathon or bounty link. In about 2–3 minutes Kestrel returns a **go 
 | 3. Research | gpt-oss-120b (via Otari routing policy `kestrel-research`, DeepSeek V3.2 as backup) | **Web search, web fetch, routing and fallbacks** |
 | 4. Analysis | DeepSeek V3.2 | **Code execution** — days-to-deadline and prize-per-effort maths run in Otari's sandbox |
 | 5. Brief | gpt-oss-20b | multi-model roles |
-| Seats | Otari service key + `user` field | **Per-user budgets** ($0.15/day per seat, `403 budget_exceeded` when exceeded) and a **workspace spend ceiling** ($1.50/month) |
+| Seats | Otari service key + `user` field | **Per-user budgets** ($0.15/day per seat, `403 budget_exceeded` when exceeded) and a **workspace spend ceiling** ($5.00/month) |
 
 The UI shows, for every stage, which model and provider actually served it, whether a fallback happened, cost, and the real gateway tool calls with the sandbox code and output.
 

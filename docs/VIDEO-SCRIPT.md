@@ -17,7 +17,7 @@ Before recording: one warm-up run the day before (so you know it works), close o
 | 3:00 | Brief | Verdict, deadline, days remaining, "unknown" list. Point at the bottom line: features exercised, total cost, per-user budget "seat-judge". | project works |
 | 3:20 | Guardrail demo: **Page text (optional) → Test the guardrail with a prompt-injection attack**, Scout | "Blocked before any model ran: Otari returned 403 guardrail_violation." | guardrails (shown blocking) |
 | 3:45 | Per-user budget: choose an exhausted seat (see "Budget proof" below) and Scout | "Each seat is an Otari end user with a $0.15/day budget. Over budget: 403 budget_exceeded, with the reset time." | per-user budgets, budgets and spending limits |
-| 4:10 | Otari dashboard → Requests (rows by model) → Spend & budgets (the $1.50 workspace ceiling, the seat budget) | "Four models in the requests list. Budget policy is set in the dashboard and enforced by the gateway." | multi-model, budgets |
+| 4:10 | Otari dashboard → Requests (rows by model) → Spend & budgets (the $5.00 workspace ceiling, the seat budget) | "Four models in the requests list. Budget policy is set in the dashboard and enforced by the gateway." | multi-model, budgets |
 | 4:40 | GitHub repo, README table | "Open source; README lists each stage's Otari feature." | — |
 
 Budget proof (do this once before recording, so a seat is already exhausted): run 2 scouts back to back on `seat-guest` until it answers `budget_exceeded`; it stays blocked until 00:00 UTC. Record that seat for the 3:45 segment and use `seat-judge` for the main run.

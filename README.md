@@ -19,7 +19,7 @@ Four open-weight model families in five separate Otari calls (each stage is its 
 | 3 | Research | `openai/gpt-oss-120b`, failover `deepseek/deepseek-v3.2` → `qwen-3.5-35b`; optionally called through the Otari **routing policy** named by `KESTREL_ROUTING_POLICY` | **Web search**, **web fetch**, **routing and fallbacks** (only when the policy or an Otari provider fallback really served the call) |
 | 4 | Analysis | `deepseek/deepseek-v3.2` (12.7s vs 126–191s for `qwen-3.5-35b` on the same sandbox task) | **Code execution** (deadline + prize-per-effort maths in the sandbox) |
 | 5 | Brief | `openai/gpt-oss-20b` | **Multi-model roles** |
-| — | Seats | `seat-judge`, `seat-demo`, `seat-guest` | **Per-user budgets** (Otari service key + `user` field; each seat capped at $0.15/day, `403 budget_exceeded` when exceeded); **workspace budget** ($1.50/month ceiling); automatic provider fallback |
+| — | Seats | `seat-judge`, `seat-demo`, `seat-guest` | **Per-user budgets** (Otari service key + `user` field; each seat capped at $0.15/day, `403 budget_exceeded` when exceeded); **workspace budget** ($5.00/month ceiling); automatic provider fallback |
 
 The UI shows, for each stage, the model that actually served it, its provider, whether a fallback happened, latency, cost, which gateway tool calls ran (with the sandbox code and stdout), and the guardrail verdict. Nothing is mocked: if a tool is unavailable the stage says so.
 
@@ -62,7 +62,7 @@ Evidence of live verification is in `docs/` (probe results, friction log, test r
 
 ## Security notes
 - API keys live only in server env (Vercel encrypted env vars). `.env*` is git-ignored except `.env.example`.
-- No shared secret to hand out: abuse is bounded by a fixed seat allow-list (visitors cannot mint end users), per-seat daily budgets ($0.15) and a workspace spend ceiling ($1.50/month). A visitor's own Otari key is validated by format, forwarded for that single request, and never stored or logged.
+- No shared secret to hand out: abuse is bounded by a fixed seat allow-list (visitors cannot mint end users), per-seat daily budgets ($0.15) and a workspace spend ceiling ($5.00/month). A visitor's own Otari key is validated by format, forwarded for that single request, and never stored or logged.
 - Fetched web content is untrusted: the research prompt forbids following instructions inside it.
 - The guardrail is a transparent **heuristic** (regex scoring), not an ML classifier. Request-level Otari guardrail entries carry no credential, so the validator endpoint is unauthenticated by design (stateless, input-capped). For production use a vendor profile (Lakera, Azure Prompt Shields) via the Otari dashboard.
 

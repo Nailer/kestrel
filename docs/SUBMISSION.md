@@ -28,7 +28,7 @@ Deadline: **2026-11-11 23:59 UTC+1 (22:59 UTC)**. Submit by Nov 11 18:00 UTC at 
 | MCP | DeepWiki `ask_wiki_question` | `mcp:completed` when the model chooses to call it (a run may skip/fail it) |
 | Code execution | analysis stage `otari_code_execution` | sandbox code + stdout shown in UI |
 | Guardrails | custom prompt-injection service via request-level `url` | 403 `guardrail_violation` on injection; `evaluated` on normal input (docs/TEST-REPORT T7–T9) |
-| Budgets / spending limits | workspace ceiling $1.50/month (dashboard Spend & budgets) | configured; **not yet tripped in a demo** |
+| Budgets / spending limits | workspace ceiling $5.00/month (dashboard Spend & budgets) | configured; **not yet tripped in a demo** |
 | Per-user budgets | seats are Otari end users (service key + `user`), each on the `kestrel-seat` budget ($0.15/day) | **enforced and verified 2026-11-06**: `seat-guest` over its cap gets 403 `budget_exceeded` (`otari-budget-scope: user`), both calling Otari directly and through the live app. Evidence: `docs/TEST-REPORT.md` T14 (friction: #23) |
 | Routing & fallbacks | automatic multi-provider fallback + app-level model failover | named policy `kestrel-research` not created yet (user step U5) |
 
