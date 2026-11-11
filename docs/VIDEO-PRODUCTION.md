@@ -1,3 +1,11 @@
+# STOP: do not submit the silent videos. Use this only as a script and teleprompter.
+
+The official page says: "video demonstration and video feedback cannot use AI. It must be a screen recording with audio of the hackathon participant demonstrating their project." The silent videos in `submission/videos/` were recorded by an automated browser and assembled with generated cards, so they do not meet that rule and could cost the 10 demo points or the eligibility. Record your own screen with your own voice instead. The timeline and the "Say" tables below, and the `*-WITH-LYRICS-guide.mp4` files, are fine to use as a script to read from while you record.
+
+Fast way to record: QuickTime → File → New Screen Recording, microphone on, then follow the demo table below in order, using `seat-demo` for the main run (`seat-judge` has too little budget left today for a full run) and `seat-guest` for the budget-refusal moment.
+
+---
+
 # Video production: silent videos made for you, you add your own voice
 
 Files are in `submission/videos/` (not committed to git, they are large):
@@ -86,5 +94,3 @@ Tips: speak slower than feels natural, in your own words if you prefer (the lyri
 | 2:57 | 26s | I'd like a hosted guardrail that needs no service of my own, a warning when an MCP tool name doesn't match, and 'empty final message' as a trigger for routing fallback. Clearer failure reasons for web fetch, a warning before a spend ceiling blocks users, and one setup guide for service keys, budgets and regions. |
 | 3:23 | 7s | Thanks to the Otari team. Kestrel is open source, and the link is in my email. |
 
-## One line for the submission email
-"Demo and feedback videos use real screen captures of the live app and my Otari dashboard, recorded with browser automation on 2026-11-11; the narration is my own voice."
