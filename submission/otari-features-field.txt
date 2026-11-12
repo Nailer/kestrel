@@ -1,0 +1,45 @@
+OTARI FEATURES USED IN KESTREL (8 of the rubric's features, each exercised by the live app)
+Live app: https://kestrel-inky-psi.vercel.app   Code: https://github.com/Nailer/kestrel (branch: hackathon)
+
+OPEN-WEIGHT MODELS (4 models, 3 families, five stages; defined in lib/pipeline.ts, lines 11-22)
+- Stage 1 Triage: mistralai/mistral-small-3.2-24b-instruct-2506 (Mistral, Apache-2.0)
+- Stage 2 Sponsor docs via MCP: openai/gpt-oss-120b (OpenAI gpt-oss, Apache-2.0)
+- Stage 3 Web research: openai/gpt-oss-120b, backup deepseek/deepseek-v3.2, called through the Otari routing policy kestrel-research
+- Stage 4 Analysis with code execution: deepseek/deepseek-v3.2 (DeepSeek, MIT). I measured it at 12.7s on the same task where qwen-3.5-35b took 126-191s.
+- Stage 5 Brief writer: openai/gpt-oss-20b (OpenAI gpt-oss, Apache-2.0)
+
+OTARI FEATURES
+
+1. Multiple models in distinct roles
+   Five stages, each its own Otari call with its own model: triage, MCP docs, web research, sandbox analysis, brief writing. The UI shows the model, provider and cost per stage.
+
+2. Model routing and fallbacks
+   - A named Otari routing policy, kestrel-research (gpt-oss-120b first, DeepSeek V3.2 as backup), is what the research stage calls.
+   - Automatic provider failover seen in a real run: otari-fallback: true, 2 attempts (DeepInfra, then OVHcloud) after an upstream 429.
+   - Separately, my own code fails over to another model if a model returns an empty answer (lib/pipeline.ts, around lines 210-237).
+   Evidence: the pipeline panel prints "Called through Otari routing policy kestrel-research" and the model that served the call.
+
+3. MCP integration
+   Stage 2 uses a managed DeepWiki MCP server (https://mcp.deepwiki.com/mcp, tool ask_wiki_question) to ask questions about the sponsor's GitHub repository.
+   Evidence: otari_tool_calls returns type "mcp", status "completed", shown in an expandable panel.
+
+4. Web search and web fetch
+   The research stage checks GET /tools, then sends otari_web_search and otari_web_fetch to find the official rules and deadlines.
+   Evidence: otari_tool_calls has type "web_search" and "web_fetch" entries with the real queries and URLs. Some sites block fetchers, and the app shows those failed fetches instead of hiding them.
+
+5. Code execution
+   DeepSeek writes Python that runs in otari_code_execution to compute days and hours to the deadline from the current UTC time, plus prize-per-effort figures.
+   Evidence: an expandable drawer shows the code, stdout and exit_code 0.
+
+6. Guardrails
+   A request-level prompt-injection guardrail (mode: block) points at my own validator, /api/guard/validate. Otari calls it before any model sees the text and returns a verdict in the Otari-Guardrails header. A malicious input gets an HTTP 403 (code guardrail_violation, recorded in docs/TEST-REPORT.md test T7) whose body names the profile, the explanation and the score, and the run stops.
+   Evidence: scripts/guard-test.ts, and the "Test the guardrail with a prompt-injection attack" button in the app.
+
+7. Per-user budgets
+   A service key plus the user field makes each visitor an Otari end user. Three demo seats (seat-judge, seat-demo, seat-guest) each have a $0.15/day budget. Over the limit, Otari returns 403 budget_exceeded with otari-budget-scope: user, and the app shows "This demo seat has used its daily budget".
+   Evidence: Otari dashboard end-user spend, and a live refusal in the app.
+
+8. Budgets and spending limits
+   A workspace spend ceiling, kestrel-workspace-cap ($5.00 per month), is set in the Otari dashboard (Organization > Spend & budgets) and enforced by the gateway.
+
+OTARI ISSUES FILED (from real use): https://github.com/mozilla-ai/otari/issues/3194 and https://github.com/mozilla-ai/otari/issues/3195
